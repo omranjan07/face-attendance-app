@@ -142,3 +142,22 @@ Username: admin
 
 Password: admin123
 👉 (Change this after first login)
+
+## 📸 Face Recognition in Action
+
+Below are screenshots showing how the attendance system works using real-time face recognition:
+
+   1. **Login Page**
+   ![Login](screenshots/demo3.png)
+   2. **Admin Dashboard**
+   ![Dashboard](screenshots/demo5.png)
+   3. **User Registration**
+   ![Register User](screenshots/demo1.png)
+   4. **Success Message After Attendance**
+   ![Attendance Success](screenshots/demo4.png)
+   5. **Face Capture Interface**
+   ![Face Capture](screenshots/demo2.png)
+   6. **Analytics Page**
+   ![Analytics](screenshots/demo8.png)
+   8. **My Attendance History**
+   ![History](screenshots/demo5.png)
