@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-center mb-3">
         <form method="POST" class="d-flex align-items-center">
             <input type="date" name="selected_date" class="form-control form-control-sm me-2"
-                   value="{{ selected_date or '' }}" required />
+                value="{{ selected_date or '' }}" required />
             <button type="submit" class="btn btn-primary btn-sm">View</button>
         </form>
 
@@ -49,20 +49,20 @@
             type: 'bar',
             data: {
                 labels: {{ names | tojson }},
-                datasets: [{
-                    label: 'Attendance Count',
-                    data: {{ counts | tojson }},
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+    datasets: [{
+        label: 'Attendance Count',
+        data: {{ counts | tojson }},
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
+    options: {
+        responsive: true,
+            scales: {
+            y: { beginAtZero: true }
+        }
+    }
         });
     }
 </script>
