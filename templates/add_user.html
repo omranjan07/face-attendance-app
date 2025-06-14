@@ -1,0 +1,28 @@
+# Face capture UI
+{% extends "base.html" %}
+{% block title %}Register User{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Register New User</h3>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Username:</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Password:</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Role:</label>
+            <select name="role" class="form-select" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Register</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ms-2">Back</a>
+    </form>
+</div>
+{% endblock %}

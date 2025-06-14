@@ -1,0 +1,9 @@
+<form method="POST" action="{{ url_for('register') }}">
+    <input type="text" name="username" required>
+    <input type="password" name="password" required>
+    <select name="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+    </select>
+    <button type="submit">Register</button>
+</form>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Register New Face{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3 class="mb-4 text-center">📸 Register New Face (Admin Only)</h3>
+    <form method="POST" class="mx-auto" style="max-width: 400px;">
+        <div class="mb-3">
+            <label for="username" class="form-label">User Name</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="roll" class="form-label">Roll Number</label>
+            <input type="text" name="roll" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Capture & Train</button>
+    </form>
+</div>
+{% endblock %}

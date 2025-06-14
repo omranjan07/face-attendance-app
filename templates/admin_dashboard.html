@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">🧑‍💼 Admin Dashboard</h3>
+
+    <div class="mb-3 text-end">
+        <a href="{{ url_for('add_user') }}" class="btn btn-primary btn-sm">➕ Register New User</a>
+    </div>
+
+    <p><strong>Total Registered Users:</strong> {{ total_users }}</p>
+    <ul>
+        {% for role, count in role_counts.items() %}
+            <li>{{ role.title() }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+
+    <h5 class="mt-4">📋 All Users</h5>
+    <table class="table table-bordered text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

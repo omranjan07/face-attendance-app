@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Attendance{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">My Attendance History</h2>
+    {% if records %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Roll</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r['Date'] }}</td>
+                    <td>{{ r['Roll'] }}</td>
+                    <td>{{ r['Time'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">No attendance found for your account.</p>
+    {% endif %}
+</div>
+{% endblock %}

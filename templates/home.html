@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Today's Attendance</h2>
+
+    {% if session['role'] == 'admin' %}
+        <p class="text-center text-primary">Welcome, Admin {{ session['user'] }}!</p>
+    {% else %}
+        <p class="text-center text-success">Welcome, {{ session['user'] }}! You can view your records in "My History".</p>
+    {% endif %}
+
+    {% if names %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Roll</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(l) %}
+                <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ names[i] }}</td>
+                    <td>{{ rolls[i] }}</td>
+                    <td>{{ times[i] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-muted">No attendance marked yet for today.</p>
+    {% endif %}
+
+    <p class="text-muted mt-3">Total Registered Users: {{ totalreg }}</p>
+</div>
+{% endblock %}

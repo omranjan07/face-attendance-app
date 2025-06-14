@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Registered Faces{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="text-center mb-4">👥 Registered Face Data</h3>
+
+    {% if face_data %}
+    <div class="row">
+        {% for entry in face_data %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ entry.user }}</h5>
+                    <div class="d-flex flex-wrap justify-content-center">
+                        {% for img in entry.images %}
+                        <img src="{{ url_for('static', filename='faces/' ~ img) }}" alt="face" class="img-thumbnail m-1"
+                            width="70" height="70">
+                        {% endfor %}
+                    </div>
+                    <p class="text-muted mt-2">{{ entry.images|length }} images</p>
+
+                    <div class="d-flex justify-content-center mt-2">
+                        <form method="POST" action="{{ url_for('delete_face', username=entry.user) }}"
+                              onsubmit="return confirm('Are you sure you want to delete {{ entry.user }}?')">
+                            <button class="btn btn-sm btn-danger me-2">Delete</button>
+                        </form>
+                        <form method="GET" action="{{ url_for('download_face_zip', username=entry.user) }}">
+                            <button class="btn btn-sm btn-secondary">Download ZIP</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted text-center">No registered face data found.</p>
+    {% endif %}
+</div>
+{% endblock %}
