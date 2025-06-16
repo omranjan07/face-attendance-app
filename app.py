@@ -119,31 +119,39 @@ def register_face():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        username = request.form.get('username')
-        roll = request.form.get('roll')
+        username = request.form.get('username').strip()
+        roll = request.form.get('roll').strip()
 
         if not username or not roll:
             flash("Both username and roll are required.", "warning")
             return redirect(url_for('register_face'))
 
-        # Check if user is already registered in DB
+        # Confirm user exists in DB
         user_exists = User.query.filter_by(username=username).first()
         if not user_exists:
-            flash("User not found. Please add the user first.", "warning")
+            flash("❌ User not found. Please add the user first.", "warning")
             return redirect(url_for('register_face'))
 
-        folder_name = f"{username}_{roll}"
-        folder_path = os.path.join('static/faces', folder_name)
+        # Ensure roll is not already used in any folder
+        face_dir = 'static/faces'
+        existing_rolls = [folder for folder in os.listdir(face_dir) if folder.endswith(f"_{roll}")]
+        if existing_rolls:
+            flash("⚠️ This roll number is already registered with another user.", "danger")
+            return redirect(url_for('register_face'))
 
-        if os.path.exists(folder_path):
-            flash("❌ Face already registered for this user.", "danger")
-        else:
-            os.makedirs(folder_path)
-            capture_faces(folder_path)
-            train_model()
-            flash(f"✅ Face registered for {folder_name} and model retrained.", "success")
+        # Proceed to register
+        folder_name = f"{username}_{roll}"
+        folder_path = os.path.join(face_dir, folder_name)
+        os.makedirs(folder_path, exist_ok=True)
+
+        capture_faces(folder_path)
+        train_model()
+
+        flash(f"✅ Face registered for {folder_name} and model retrained.", "success")
+        return redirect(url_for('register_face'))
 
     return render_template('register_face.html')
+
 
 
 # --------------------------
@@ -154,11 +162,116 @@ def admin_dashboard():
     if 'user' not in session or session['role'] != 'admin':
         flash("Access denied", "danger")
         return redirect(url_for('login'))
-    users = User.query.all()
-    counts = {role: 0 for role in ['admin', 'user']}
-    for u in users:
+
+    query = request.args.get('q')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+
+    if query:
+        users = User.query.filter(User.username.ilike(f"%{query}%")).all()
+        pagination = None
+    else:
+        pagination = User.query.paginate(page=page, per_page=per_page, error_out=False)
+        users = pagination.items
+
+    # Count roles
+    counts = {'admin': 0, 'user': 0}
+    for u in User.query.all():
         counts[u.role] += 1
-    return render_template('admin_dashboard.html', users=users, total_users=len(users), role_counts=counts)
+
+    return render_template(
+        'admin_dashboard.html',
+        users=users,
+        total_users=User.query.count(),
+        role_counts=counts,
+        pagination=pagination,
+        query=query
+    )
+
+
+# --------------------------
+#  reset password Admin 
+# --------------------------
+@app.route('/reset-password/<int:user_id>', methods=['GET', 'POST'])
+def reset_password(user_id):
+    if 'user' not in session or session['role'] != 'admin':
+        flash("Access denied", "danger")
+        return redirect(url_for('login'))
+
+    user = User.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        user.set_password(new_password)
+        db.session.commit()
+        flash(f"🔐 Password reset for {user.username}", "success")
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('reset_password.html', user=user)
+
+
+
+# --------------------------
+# Update User
+# --------------------------
+@app.route('/update-user/<int:user_id>', methods=['GET', 'POST'])
+def update_user(user_id):
+    if 'user' not in session or session['role'] != 'admin':
+        flash("Access denied", "danger")
+        return redirect(url_for('login'))
+
+    user = User.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        new_username = request.form.get('username')
+        new_role = request.form.get('role')
+
+        user.username = new_username
+        user.role = new_role
+        db.session.commit()
+
+        flash("✅ User updated successfully.", "success")
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('update_user.html', user=user)
+
+
+
+# --------------------------
+# Delete User
+# --------------------------
+
+@app.route('/delete-user/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    if 'user' not in session or session['role'] != 'admin':
+        flash("Access denied", "danger")
+        return redirect(url_for('login'))
+
+    user = User.query.get(user_id)
+
+    if not user:
+        flash("❌ User not found.", "warning")
+        return redirect(url_for('admin_dashboard'))
+
+    # Prevent deleting self
+    if user.username == session['user']:
+        flash("❌ You cannot delete your own admin account.", "danger")
+        return redirect(url_for('admin_dashboard'))
+
+    # If admin is being deleted, check total number of admins
+    if user.role == 'admin':
+        total_admins = User.query.filter_by(role='admin').count()
+        if total_admins <= 1:
+            flash("⚠️ At least one admin must remain in the system.", "warning")
+            return redirect(url_for('admin_dashboard'))
+
+    db.session.delete(user)
+    db.session.commit()
+    flash(f"✅ User '{user.username}' deleted successfully.", "success")
+    return redirect(url_for('admin_dashboard'))
+
+
+
 
 # --------------------------
 # Home Dashboard (Daily Attendance)
